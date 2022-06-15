@@ -10,17 +10,50 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 
 const App = () => {
   const [inputData, setInputData] = useState('');
-  const [innerValue, setInnerValue] = useState('');
+  const [innerValue2, setInnerValue2] = useState('');
+  const [innerValue1, setInnerValue1] = useState('');
+  const [finalValue, setFinalValue] = useState('');
+  const [currentOperation, setCurrentOperation] = useState('');
+
+  console.log('input DATAT>>>', inputData);
+
+  const onOperatorChange = (value1, value2, operator) => {
+    console.log('value1 in operatorChange>>>', value1);
+    console.log('value2 in operatorChange>>>', value2);
+    let finalValueTemp = '';
+    if (operator === '+') {
+      finalValueTemp = parseFloat(value1) + parseFloat(value2);
+    } else if (operator === '-') {
+      finalValueTemp = value1 - value2;
+    } else if (operator === 'x') {
+      finalValueTemp = value1 * value2;
+    } else if (operator === '/') {
+      finalValueTemp = value1 / value2;
+    }
+    setFinalValue(finalValueTemp);
+    console.log('finalValue++++', finalValue);
+    setInnerValue1(finalValueTemp);
+    setInnerValue2('');
+  };
+
+  console.log('finalValue++++', finalValue);
 
   const handleInputKeyPressed = (keyType, keyValue) => {
     console.log('keyType>>>>', keyType, '<<<keyValuE>>>>', keyValue);
     if (keyType === 'number') {
       setInputData(`${inputData}${keyValue}`);
+
+      setInnerValue2('' + innerValue2 + keyValue);
     } else {
       if (keyValue === 'trash') {
         setInputData('');
+        setFinalValue('');
+        setInnerValue1('');
+        setInnerValue2('');
+        setCurrentOperation('');
       } else if (keyValue === 'backspace') {
         setInputData(inputData.slice(0, -1));
+        setInnerValue2(innerValue2.slice(0, -1));
       } else {
         if (
           !(
@@ -32,44 +65,54 @@ const App = () => {
         ) {
           if (keyValue === 'plus') {
             setInputData(`${inputData}+`);
-            setInnerValue(parseFloat(inputData));
+            // setInnerValue(inputData + '+');
+            setCurrentOperation('+');
+            if (currentOperation) {
+              onOperatorChange(innerValue1, innerValue2, '+');
+            }
           } else if (keyValue === 'minus') {
             setInputData(`${inputData}-`);
+            // setInnerValue(parseFloat(inputData) - 0);
+            setCurrentOperation('-');
+            if (currentOperation) {
+              onOperatorChange(innerValue1, innerValue2, '-');
+            }
           } else if (keyValue === 'times') {
             setInputData(`${inputData}x`);
+            // setInnerValue(parseFloat(inputData) * 1);
+            setCurrentOperation('*');
+            if (currentOperation) {
+              onOperatorChange(innerValue1, innerValue2, 'x');
+            }
           } else if (keyValue === 'divide') {
             setInputData(`${inputData}/`);
+            // setInnerValue(parseFloat(inputData) / 0);
+            setCurrentOperation('/');
+            if (currentOperation) {
+              onOperatorChange(innerValue1, innerValue2, '/');
+            }
           } else if (keyValue === 'percent') {
             setInputData(`${inputData}`);
+            // setInnerValue(parseFloat(inputData) * 0.01);
+            setCurrentOperation('%');
+          } else if (keyValue === 'equals') {
+            onOperatorChange(innerValue1, innerValue2, '+');
           }
         }
       }
     }
   };
 
-  console.log(
-    'operationsssss>>>',
-    inputData
-      .split('')
-      .map(item => {
-        if (isNaN(item)) {
-          console.log('inside if>><><');
-          return item;
-        } else {
-          console.log('inside else>><><');
-          return parseFloat(item);
-        }
-      })
-      .join(''),
-  );
-
-  console.log('input data>>>>', parseFloat(inputData));
+  console.log('currentOperatorMKI>>', currentOperation);
 
   const DisplayScreenComponent = () => {
     return (
       <View style={styles.displayScreenContainer}>
         <View style={styles.displayRow}>
           <Text style={styles.displayRowText}>{inputData}</Text>
+        </View>
+        <View style={styles.displayRow}>
+          <Text style={styles.displayRowText}>{finalValue}</Text>
         </View>
       </View>
     );
